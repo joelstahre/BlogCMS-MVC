@@ -12,8 +12,6 @@ class AdminController {
 
 
 	public function runAdmin() {
-
-
 		return $this->adminView->getFrontPage();
 	}
 }

@@ -4,6 +4,9 @@ namespace controller;
 
 require_once("src/login/view/LoginView.php");
 require_once("src/login/model/LoginModel.php");
+require_once("src/login/model/UserName.php");
+require_once("src/login/model/Password.php");
+require_once("src/login/model/ValidUser.php");
 require_once("src/admin/controller/AdminController.php");
 
 class LoginController {
@@ -55,14 +58,16 @@ class LoginController {
 
 		try {
 
-			$this->username = $this->loginView->getUsername();
-			$this->password = $this->loginView->getPassword();
+			$username = new \model\UserName($this->loginView->getUsername());
+			$password = new \model\Password($this->loginView->getPassword());
 
+			$validUser = new \model\ValidUser($username, $password);
 
-			$this->loginModel->doSignIn($this->username, $this->password);
+			$this->loginModel->doSignIn($validUser);
 
 
 		} catch (\Exception $e) {
+			echo $e->getMessage();
 			return "fel, hamnade i catch";
 		}
 

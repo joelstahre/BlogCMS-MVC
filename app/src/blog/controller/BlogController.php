@@ -8,6 +8,8 @@ require_once("src/blog/model/PostList.php");
 require_once("src/login/controller/LoginController.php");
 require_once("src/blog/model/PostList.php");
 require_once("src/blog/model/ValidComment.php");
+require_once("src/dal/PostDAL.php");
+require_once("src/dal/CommentDAL.php");
 
 class BlogController {
 
@@ -40,11 +42,12 @@ class BlogController {
 	 * [__construct description]
 	 */
 	public function __construct() {
-		$this->commentView = new \view\CommentView();
-		$this->postView = new \view\PostView($this->commentView);
-		$this->blogView = new \view\BlogView($this->postView);
-		$this->postDAL = new \dal\PostDAL();
-		$this->postList = new \model\PostList($this->postDAL);
+		$this->commentView = 	 new \view\CommentView();
+		$this->postView =    	 new \view\PostView($this->commentView);
+		$this->blogView = 	 	 new \view\BlogView($this->postView);
+		$this->commentDAL = 	 new \dal\CommentDAL();
+		$this->postDAL = 	 	 new \dal\PostDAL($this->commentDAL);
+		$this->postList = 	 	 new \model\PostList($this->postDAL);
 		$this->loginController = new \controller\LoginController();
 	}
 
@@ -53,27 +56,13 @@ class BlogController {
 	 */
 	public function runApp() {
 
-
 		if ($this->blogView->admin()) {
 			return $this->loginController->doLoginControll();
 		}
 
 		//if the user wants to create a comment
 		if ($this->commentView->postComment()) {
-			try {
-				$author = $this->commentView->getCommentAuthor();
-				$email = $this->commentView->getCommentEmail();
-				$website = $this->commentView->getCommentWebsite();
-				$comment = $this->commentView->getCommentText();
-				$postID = $this->blogView->getPostId();
-
-				$validComment = new \model\ValidComment($author, $email, $website, $comment, $postID);
-
-				$this->postDAL->createComment($validComment);
-			} catch(\Exception $e) {
-				$this->commentView->commentFaild();
-				echo $e->getMessage();//debug
-			}
+			$this->postComment();
 		}
 
 
@@ -87,11 +76,27 @@ class BlogController {
 		}
 
 
-
-
 		//Frontpage, show all posts.
 		$allPosts = $this->postList->getAllPosts();
 		return $this->blogView->getFrontPage($allPosts);
+	}
+
+
+	private function postComment() {
+		try {
+				$author = $this->commentView->getCommentAuthor();
+				$email = $this->commentView->getCommentEmail();
+				$website = $this->commentView->getCommentWebsite();
+				$comment = $this->commentView->getCommentText();
+				$postID = $this->blogView->getPostId();
+
+				$validComment = new \model\ValidComment($author, $email, $website, $comment, $postID);
+
+				$this->commentDAL->createComment($validComment);
+			} catch(\Exception $e) {
+				$this->commentView->commentFaild();
+				echo $e->getMessage();//debug
+			}
 	}
 
 }

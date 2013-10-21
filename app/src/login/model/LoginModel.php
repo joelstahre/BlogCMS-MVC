@@ -2,6 +2,8 @@
 
 namespace model;
 
+require_once("src/dal/UserDAL.php");
+
 class LoginModel {
 
 	private static $sessionSignedIn = "signed_in";
@@ -9,35 +11,32 @@ class LoginModel {
 	private static $sessionUserAgent = "user_agent";
 	private static $serverUserAgent = "HTTP_USER_AGENT";
 
+	private $userDAL;
+
+	public function __construct() {
+		$this->userDAL = new \dal\UserDAL();
+	}
+
 
 	/**
-	 * @param  string $username
-	 * @param  string $password
-	 * @throws exception
-	 * @todo Fix duplication
+	 * @param  \model\ValidUserd
+	 * @throws exception if the password dont match the username och the password is wrong.
+	 * @todo få tillbaka ett ValidUser objekt?
 	 */
-	public function doSignIn($username, $password) {
+	public function doSignIn(\model\ValidUser $validUserClient) {
 
-		if ($username == "Admin" && $password == sha1("Password")) {
+		$username = $validUserClient->getUsername()->__toString();
+		$password = $validUserClient->getPassword();
+
+		$passwordDB = $this->userDAL->findUser($username);
+
+
+		if($password == $passwordDB) {
 			$this->signIn($username);
 		} else {
 			throw new \Exception("Felaktigt Användarnamn/lösenord.");
 		}
 
-	}
-
-	/**
-	 * @param  string $username
-	 * @param  string $password
-	 * @throws exception
-	 */
-	public function doSignInWithCookies($username, $password, $cookieExpTime) {
-
-		if ($username == "Admin" && $password == sha1("Password") && time() <= $cookieExpTime ) {
-			$this->signIn($username);
-		} else {
-			throw new \Exception("Felaktigt information i cookie.");
-		}
 	}
 
 	/**
@@ -60,9 +59,16 @@ class LoginModel {
 		}
 	}
 
-	/**
-	 * @return boolian
-	 */
+	/*
+	public function doSignInWithCookies($username, $password, $cookieExpTime) {
+
+		if ($username == "Admin" && $password == sha1("Password") && time() <= $cookieExpTime ) {
+			$this->signIn($username);
+		} else {
+			throw new \Exception("Felaktigt information i cookie.");
+		}
+	}
+
 	public function doSignOut() {
 
 		if (isset($_SESSION['signed_in'])) {
@@ -70,5 +76,5 @@ class LoginModel {
 			return true;
 		}
 	}
-
+	*/
 }
