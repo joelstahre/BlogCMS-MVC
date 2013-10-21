@@ -1,0 +1,178 @@
+body {
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 14px;
+	line-height: 1.428571429;
+	background-color: #fff;
+}
+
+body {
+	font: normal 12px 'Open Sans', Trebuchet MS, Sans-serif;
+	color: #666666;
+}
+
+a {
+	text-decoration: none;
+	color: #666666;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+h1 {
+	color: #666666;
+	text-shadow: 2px 2px 2px #FFFFFF;
+	letter-spacing: -2px;
+	font-size: 38px;
+	font-weight: 500;
+}
+
+h2 {
+	color: black;
+	font-weight: bold;
+	font-size: 25px;
+	font-family: 'Open Sans', sans-serif;
+}
+
+h2 a {
+	color: black;
+	font-weight: bold;
+	font-size: 25px;
+	font-family: 'Open Sans', sans-serif;
+}
+
+#container {
+	max-width: 1140px;
+	margin-left: auto;
+	margin-right: auto;
+	margin: 0 auto;
+	color: #444;
+	font-family: 'Open Sans',sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+#header {
+	height:90px;
+}
+
+#nav {
+	height:30px;
+}
+
+#main {
+	overflow:auto;
+}
+
+#footer {
+	height:40px;
+	text-align: center;
+}
+
+#main {
+	overflow:auto;
+}
+
+#main_left {
+	float:left;
+	width:70%;
+}
+
+#main_right {
+	float:left;
+	width:30%;
+}
+
+
+.post {
+	border: 1px solid #e3e3e3;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	padding: 15px;
+	overflow: auto;
+}
+
+.post-title a {
+	color: black;
+}
+
+.post-header {
+	border: 1px solid #d2d2d2;
+	margin-bottom: 20px;
+	margin-top: 10px;
+	background: #eee;
+	padding: 5px 10px;
+}
+
+.post-header-author {
+	color: #3276b1;
+}
+
+.post-header-comment {
+	float: right;
+}
+
+
+
+
+/*******
+LoginForm
+******/
+.form-signin {
+   max-width: 330px;
+     padding: 15px;
+    margin: 0 auto;
+}
+
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+   margin-bottom: 10px;
+}
+
+.form-signin .checkbox {
+        font-weight: normal;
+}
+
+.form-signin .form-control {
+        position: relative;
+        font-size: 16px;
+        height: auto;
+        padding: 10px;
+        -webkit-box-sizing: border-box;
+           -moz-box-sizing: border-box;
+                box-sizing: border-box;
+}
+
+.form-signin .form-control:focus {
+        z-index: 2;
+}
+
+.form-signin input[type="text"] {
+        margin-bottom: -1px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+}
+
+.form-signin input[type="password"] {
+        margin-bottom: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+}
+
+
+.error {
+	color: red;
+}
+
+#readmore {
+	float: right;
+}
+
+#well {
+	 background-color: #fff;
+}
