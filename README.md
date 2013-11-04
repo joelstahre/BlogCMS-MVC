@@ -4,6 +4,8 @@
 ###Links
 -----
 [Demo](http://joelstahre.com/blogdemo/)
+username : Admin
+password : Password
 
 [Installations fil](http://joelstahre.com/files/blog.zip)
 
