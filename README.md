@@ -35,7 +35,7 @@ v1.0 Relese
 
 [CodeReview (swedish)](https://docs.google.com/document/d/14YRXMOcPWVecALQGhVFVQsUmlazPWSDdTZG8n8MWx9E/edit?usp=sharing)
 
-[Klass Diagram(kommer snart)]()
+[Klass Diagram(kommer snart)](http://joelstahre.com/files/classdiagram.png)
 
 ###Developer
 -----
