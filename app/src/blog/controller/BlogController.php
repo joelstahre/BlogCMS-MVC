@@ -4,12 +4,10 @@ namespace controller;
 
 require_once("src/blog/view/BlogView.php");
 require_once("src/blog/view/PostView.php");
-require_once("src/blog/model/PostList.php");
+require_once("src/blog/model/PostHandler.php");
+require_once("src/blog/model/CommentHandler.php");
 require_once("src/login/controller/LoginController.php");
-require_once("src/blog/model/PostList.php");
-require_once("src/blog/model/ValidComment.php");
-require_once("src/dal/PostDAL.php");
-require_once("src/dal/CommentDAL.php");
+require_once("src/common/model/Captcha.php");
 
 class BlogController {
 
@@ -29,33 +27,48 @@ class BlogController {
 	private $postView;
 
 	/**
-	 * @var \model\PostList
+	 * @var \model\PostHandler
 	 */
-	private $postList;
+	private $postHandler;
 
 	/**
-	 * @var PostDAL
+	 * @var \model\CommentHandler
 	 */
-	private $postDAL;
+	private $commentHandler;
+
+	/**
+	 * @var \model\Captcha
+	 */
+	private $captcha;
+
+	/**
+	 * @var array
+	 */
+	private $allPosts;
+
+
 
 	/**
 	 * [__construct description]
 	 */
-	public function __construct() {
-		$this->commentView = 	 new \view\CommentView();
+	public function __construct(\mysqli $mysqli) {
+	    $this->loginController = new \controller\LoginController($mysqli);
+		$this->postHandler = 	 new \model\PostHandler($mysqli);
+		$this->commentHandler =  new \model\CommentHandler($mysqli);
+	    
+		$this->captcha = 		 new \model\Captcha();
+		$this->commentView = 	 new \view\CommentView($this->captcha);
 		$this->postView =    	 new \view\PostView($this->commentView);
 		$this->blogView = 	 	 new \view\BlogView($this->postView);
-		$this->commentDAL = 	 new \dal\CommentDAL();
-		$this->postDAL = 	 	 new \dal\PostDAL($this->commentDAL);
-		$this->postList = 	 	 new \model\PostList($this->postDAL);
-		$this->loginController = new \controller\LoginController();
+
 	}
 
 	/**
 	 * @return string HTML
 	 */
 	public function runApp() {
-
+		$this->allPosts = $this->postHandler->getAllPosts();
+		//if user wants to gå to admin section
 		if ($this->blogView->admin()) {
 			return $this->loginController->doLoginControll();
 		}
@@ -65,37 +78,40 @@ class BlogController {
 			$this->postComment();
 		}
 
-
-		//If the user wants to se a single post.
+		//If the user wants to see a single post.
 		if ($this->blogView->viewSingle()) {
 
-			$id = $this->blogView->getPostId();
-			$singlePost = $this->postList->getSinglePost($id);
+			try {
+				//generate new captcha string.
+				$this->captcha->generateNumbers();
+				$id = $this->blogView->getPostId();
+				$singlePost = $this->postHandler->getSinglePost($id);
 
-			return $this->blogView->getSinglePage($singlePost);
+			} catch(\Exception $e) {
+				//echo $e->getMessage();
+				return $this->blogView->getErrorPage($this->allPosts);
+			}
+			return $this->blogView->getSinglePage($singlePost, $this->allPosts);
 		}
 
-
 		//Frontpage, show all posts.
-		$allPosts = $this->postList->getAllPosts();
-		return $this->blogView->getFrontPage($allPosts);
+		return $this->blogView->getFrontPage($this->allPosts);
 	}
 
 
 	private function postComment() {
 		try {
-				$author = $this->commentView->getCommentAuthor();
-				$email = $this->commentView->getCommentEmail();
-				$website = $this->commentView->getCommentWebsite();
-				$comment = $this->commentView->getCommentText();
-				$postID = $this->blogView->getPostId();
+				$commentFromUser = $this->commentView->getNewComment();
 
-				$validComment = new \model\ValidComment($author, $email, $website, $comment, $postID);
+				//validate captcha
+				$userCaptchaString = $this->commentView->getCaptcha();
+				$this->captcha->captchaValidate($userCaptchaString);
 
-				$this->commentDAL->createComment($validComment);
+				$this->commentHandler->createComment($commentFromUser);
+				$this->commentView->commentSuccsess();
 			} catch(\Exception $e) {
 				$this->commentView->commentFaild();
-				echo $e->getMessage();//debug
+				//echo $e->getMessage();//debug
 			}
 	}
 

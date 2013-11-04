@@ -15,38 +15,30 @@ class LoginController {
 
 	private $loginModel;
 
-	private $navigation;
-
-	public function __construct() {
+	public function __construct(\mysqli $mysqli) {
 		$this->loginView = new \view\LoginView();
-		$this->loginModel = new \model\LoginModel();
-		$this->adminController = new \controller\AdminController();
+		$this->loginModel = new \model\LoginModel($mysqli);
+		$this->adminController = new \controller\AdminController($this, $mysqli);
 	}
 
 
 	public function doLoginControll() {
 
-		//If the user wants to SignIn
-		if ($this->loginView->wantsToSignIn()) {
-
-			return $this->wantsToSignIn();
-		}
-
-		/*
-		//If the use has saved cookies
-		if ($this->signInView->hasSavedCookies() && !$this->signInModel->isSignedIn()) {
-			return $this->signInController->SignInWithCookies();
-		}
-
-		//If the user wants to SignOut
-		if ($this->adminView->wantsToSignOut()) {
-			return $this->signInController->wantsToSignOut();
-		}
-		*/
 
 		//If the user already is SignedIn
 		if ($this->loginModel->isSignedIn()) {
 			return $this->adminController->runAdmin();
+		}
+
+		//If the use has saved cookies
+		if ($this->loginView->hasSavedCookies()) {
+			return $this->signInWithCookies();
+		}
+
+		//If the user wants to SignIn
+		if ($this->loginView->wantsToSignIn()) {
+
+			return $this->wantsToSignIn();
 		}
 
 		//Display the login Form
@@ -61,17 +53,59 @@ class LoginController {
 			$username = new \model\UserName($this->loginView->getUsername());
 			$password = new \model\Password($this->loginView->getPassword());
 
-			$validUser = new \model\ValidUser($username, $password);
+			//IF keep me signedin is checked
+			if ($this->loginView->rememberMe()) {
+				$cookieExpire = $this->loginView->setCookies();
 
-			$this->loginModel->doSignIn($validUser);
+				$validUser = \model\ValidUser::createWithCookie($username, $password, $cookieExpire);
+				$this->loginModel->doSignIn($validUser);
 
+			} else {
+				$validUser = \model\ValidUser::createFromUserInput($username, $password);
+				$this->loginModel->doSignIn($validUser);
+			}
 
 		} catch (\Exception $e) {
-			echo $e->getMessage();
-			return "fel, hamnade i catch";
+			$this->loginView->loginFaild();
+			//debug echo $e->getMessage();
+			return $this->loginView->getFormHTML();;
 		}
 
 		return $this->adminController->runAdmin();
+	}
+
+
+	public function signInWithCookies() {
+
+		try {
+
+			$username = new \model\UserName($this->loginView->getUsernameByCookie());
+			$password = new \model\Password($this->loginView->getPasswordByCookie());
+
+			$validUser = \model\ValidUser::createFromUserInput($username, $password);
+
+			$this->loginModel->doSignInWithCookies($validUser);
+
+		} catch (\Exception $e) {
+
+			$this->loginView->unSetCookies();
+			$this->loginView->loginFaild();
+			// echo $e->getMessage();//debug
+			return $this->loginView->getFormHTML();
+		}
+
+		return $this->adminController->runAdmin();
+	}
+
+
+	public function wantsToSignOut() {
+		// echo "Utloggad";//debug
+		if($this->loginModel->doSignOut()) {
+
+			$this->loginView->unSetCookies();
+			$this->loginView->logOutMessage();
+			return $this->loginView->getFormHTML();
+		}
 	}
 
 }

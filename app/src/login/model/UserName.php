@@ -15,6 +15,15 @@ class UserName {
 	}
 
 	public function usernameIsOK($username) {
+		if ($username != strip_tags($username)) {
+			return false;
+		}
+		if (strlen($username) < 3) {
+			return false;
+		}
+		if (strlen($username) > 25) {
+			return false;
+		}
 		return true;
 	}
 

@@ -27,7 +27,7 @@ class LoginView {
 	/**
 	 * @var string
 	 */
-	private static $submitButton = "submit";
+	private static $submitButton = "loginIn";
 
 	/**
 	 * @var string
@@ -44,7 +44,7 @@ class LoginView {
 	 */
 	private $message = "";
 
-	const signedOut = "Du är nu utloggad!";
+	const signedOut = "Signed Out!";
 
 	/**
 	 * Constructor
@@ -62,13 +62,11 @@ class LoginView {
 
 
 		return "<div class='container-login' >
-
       		<form class='form-signin' method='post'>
 
 		        <h2 class='form-signin-heading'>Please sign in</h2>
-
+		        $this->message
 		        <input type='text' class='form-control' placeholder='Username' value='" . self::$nameOfUser . "' name='" . self::$userName . "' id='UserName'>
-
 		        <input type='password' class='form-control' placeholder='Password' name='" . self::$password . "' id='PassWord'>
 		        <label class='checkbox'>
           		<input type='checkbox' value='remember-me' name='" . self::$checkBox . "'> Remember me</label>
@@ -76,10 +74,24 @@ class LoginView {
       		</form>
 
     	</div>";
+	}
 
+	public function loginFaild() {
+		if (strlen($this->getUsername()) < 1) {
+			$this->message .= "<p class='error'>Username required!</p>";
+		}
+		if (strlen($this->getPassword()) < 1) {
+			$this->message .= "<p class='error'>Password required!</p>";
+		}
+		if(strlen($this->getUsername()) > 0 && strlen($this->getPassword()) > 0) {
+			$this->message .= "<p class='error'>Wrong username/password!</p>";
+		}
 
+	}
 
+	public function logOutMessage() {
 
+		$this->message = "<p>Du är nu utloggad</p>";
 	}
 
 	/**
@@ -117,7 +129,7 @@ class LoginView {
 		if (!empty($_POST[self::$userName])) {
 			return $_POST[self::$userName];
 		} else {
-			throw new \Exception("Användarnamn saknas");
+			return "";
 		}
 	}
 
@@ -130,7 +142,7 @@ class LoginView {
 		if (!empty($_POST[self::$password])) {
 			return sha1($_POST[self::$password]);
 		} else {
-			throw new \Exception("Lösenord saknas");
+			return "";
 		}
 	}
 
@@ -138,7 +150,7 @@ class LoginView {
 	/**
 	 * @return boolian
 	 */
-	public function getCheckboxValue() {
+	public function rememberME() {
 		return isset($_POST[self::$checkBox]);
 	}
 
@@ -148,12 +160,14 @@ class LoginView {
 	 */
 	public function setCookies() {
 
-		setcookie(self::$usernameHolder, $this->getUsername(), time() + 160);
-		setcookie(self::$passwordHolder, $this->getPassword(), time() + 160);
+		setcookie(self::$usernameHolder, $this->getUsername(), time() + 60);
+		setcookie(self::$passwordHolder, $this->getPassword(), time() + 60);
 
-		$cookieExpTime = time() + 160;
+		$cookieExpTime = time() + 60;
 
-		file_put_contents("cookieExp.txt", $cookieExpTime);
+		return $cookieExpTime;
+
+		//file_put_contents("cookieExp.txt", $cookieExpTime);
 	}
 
 	/**
@@ -164,14 +178,8 @@ class LoginView {
 
 		setcookie(self::$usernameHolder, "", time() - 3600);
 		setcookie(self::$passwordHolder, "", time() - 3600);
-		file_put_contents("cookieExp.txt", "");
 	}
 
-
-	public function getCookieExpTime() {
-		$cookieExpTime = file_get_contents("cookieExp.txt");
-		return $cookieExpTime;
-	}
 
 	/**
 	 * @return boolean

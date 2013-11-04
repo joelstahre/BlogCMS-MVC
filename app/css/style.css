@@ -32,6 +32,8 @@ h2 {
 	font-weight: bold;
 	font-size: 25px;
 	font-family: 'Open Sans', sans-serif;
+	margin-top: 0;
+	margin-bottom: 20px;
 }
 
 h2 a {
@@ -169,10 +171,99 @@ LoginForm
 	color: red;
 }
 
+.succsess {
+	color: green;
+}
+
 #readmore {
 	float: right;
 }
 
 #well {
 	 background-color: #fff;
+}
+
+.pagenation {
+	text-align: center;
+}
+
+
+.inner-container {
+	min-height: 800px;
+}
+
+.adminSidebar {
+	float: left;
+	width: 20%;
+}
+
+.adminContent {
+	float: left;
+	width: 80%;
+	padding-left: 30px;
+}
+
+.adminFooter {
+	clear: both;
+}
+
+
+#newPostTextArea {
+	height: 400px;
+}
+
+
+th {
+	background-color: #f5f5f5;
+	padding: 10px;
+}
+
+td {
+	padding: 10px;
+	border-bottom: 1px solid #e3e3e3;
+}
+
+#tableTitle {
+	width: 400px;
+}
+
+#tableAuthor {
+	width: 200px;
+}
+
+#tableAuthor {
+	width: 200px;
+}
+
+#tableComment {
+	width: 400px;
+}
+
+.widget-box {
+	overflow: auto;
+	float: left;
+	margin-right: 30px;
+}
+
+
+.pagenation-active {
+	color: black;
+}
+
+
+.install-container {
+	max-width: 900px;
+	margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.install-form {
+	width: 500px;
+	float: left;
+}
+
+#addCatInput {
+	width: 200px;
 }

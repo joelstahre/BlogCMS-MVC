@@ -1,11 +1,13 @@
 <?php
 
 namespace view;
-
+require_once("Config.php");
 
 class BlogView {
 
 	private $postView;
+	
+	private $allPosts;
 
 	private static $postIDHolder = "postID";
 
@@ -13,44 +15,47 @@ class BlogView {
 		$this->postView = $postView;
 	}
 
-
 	private static $admin = "admin";
 
 
 	/**
 	 * @return string HTML
-	 * @todo hårdkodat css
-	 * @todo hårdkodat länk
 	 */
 	private function getHeader() {
-		$html = "<header id='header'>
-					<h1><a href='http://127.0.0.1:8080/BlogProjekt/app/'>This is the blog header</a></h1>
-				</header>";
+
+		$blogTitle = \common\Config::get("blogTitle");
+		$path = \common\Config::get("appPath");
+
+		$html = "<div id='container'>
+					<header id='header'>
+						<h1><a href='$path'>$blogTitle</a></h1>
+					</header>";
 		return $html;
 	}
 
 	/**
 	 * @return string HTML
-	 * @todo hårdkodat css
 	 */
 	private function getFooter() {
-		$html = "<footer id='footer'>This is the blog footer </footer>";
+		$blogFooter = \common\Config::get("blogFooter");
+		$html = "<footer id='footer'>$blogFooter</footer>
+				</div>";
 		return $html;
 	}
 
 
 	/**
-	 * @return string HTML
-	 * @todo hårdkodat css
+	 * @param array of \model\Post objects
 	 */
-	public function getFrontPage($posts) {
+	public function getFrontPage($allPosts) {
+
 		$html = $this->getHeader();
 		$html .= "<div id='main'>
 				  	<div id='main_left'>";
-		$html .= $this->postView->getAllPostsHTML($posts);
+		$html .= $this->postView->getAllPostsHTML($allPosts);
 		$html .= "	</div>
 					<div id='main_right'>";
-		$html .= $this->getSideBar();
+		$html .= $this->getSideBar($allPosts);
 		$html .= "  </div>
 				 </div>";
 
@@ -60,16 +65,16 @@ class BlogView {
 
 	/**
 	 * @return string HTML
-	 * @todo hårdkodat css
 	 */
-	public function getSinglePage($post) {
+	public function getSinglePage(\model\Post $post, $allPost) {
+
 		$html = $this->getHeader();
 		$html .= "<div id='main'>
 				  	<div id='main_left'>";
 		$html .= $this->postView->getSinglePostHTML($post);
 		$html .= "	</div>
 					<div id='main_right'>";
-		$html .= $this->getSideBar();
+		$html .= $this->getSideBar($allPost);
 		$html .= "  </div>
 				 </div>";
 
@@ -77,28 +82,39 @@ class BlogView {
 		return $html;
 	}
 
-	public function getSideBar() {
+	public function getErrorPage($allPost) {
+		$html = $this->getHeader();
+		$html .= "<div id='main'>
+				  	<div id='main_left'>";
+		$html .= $this->postView->getError();
+		$html .= "	</div>
+					<div id='main_right'>";
+		$html .= $this->getSideBar($allPost);
+		$html .= "  </div>
+				 </div>";
+
+		$html .= $this->getFooter();
+		return $html;
+	}
+
+	public function getSideBar($allPosts) {
+	    
+	    $postArray = array_slice($allPosts, 0, 3);
+
 		$html = "<div class='col-xs-10 '>
 					<div class='well' id='well'>
-						<div>
-							<p><b>About this blog</b></p>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-						</div>
 						<hr>
 	           			<ul class='nav'>
-			              <li><b>Categories</b></li>
-			              <li class='active'><a href='#''>Link</a></li>
-			              <li><a href='#'>Link</a></li>
-			              <li><a href='#''>Link</a></li>
+			              <li><b>Latest Posts</b></li>";
+			              
+			              foreach($postArray as $post) {
+			                   $id = $post->getID(); 
+                    	       $title = $post->getTitle();
+                    	       $html .= "<li><a href='?" . self::$postIDHolder . "=$id'>$title</a></li>";
+                    	  }
+			              
+			    $html .= "
 			              <hr>
-			              <li><b>Latest Posts</b></li>
-			              <li><a href='#''>Link</a></li>
-			              <li><a href='#'>Link</a></li>
-			              <li><a href='#'>Link</a></li>
-			              <hr>
-			              <li><b>Most Popular</b></li>
-			              <li><a href='#'>Link</a></li>
-			              <li><a href='#'>Link</a></li>
 	            		</ul>
 	          		</div>
 	          	</div>";

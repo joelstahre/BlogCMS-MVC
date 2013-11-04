@@ -13,23 +13,24 @@ class LoginModel {
 
 	private $userDAL;
 
-	public function __construct() {
-		$this->userDAL = new \dal\UserDAL();
+	public function __construct(\mysqli $mysqli) {
+		$this->userDAL = new \dal\UserDAL($mysqli);
 	}
 
 
 	/**
 	 * @param  \model\ValidUserd
 	 * @throws exception if the password dont match the username och the password is wrong.
-	 * @todo få tillbaka ett ValidUser objekt?
 	 */
 	public function doSignIn(\model\ValidUser $validUserClient) {
 
 		$username = $validUserClient->getUsername()->__toString();
 		$password = $validUserClient->getPassword();
+		$cookieExpire = $validUserClient->getCookieExpTime();
+
+		$this->userDAL->updateExpireTime($username, $cookieExpire);
 
 		$passwordDB = $this->userDAL->findUser($username);
-
 
 		if($password == $passwordDB) {
 			$this->signIn($username);
@@ -37,6 +38,34 @@ class LoginModel {
 			throw new \Exception("Felaktigt Användarnamn/lösenord.");
 		}
 
+	}
+
+
+	public function doSignInWithCookies(\model\ValidUser $validUserClient) {
+
+		$username = $validUserClient->getUsername()->__toString();
+		$password = $validUserClient->getPassword();
+		$cookieExpire = $this->userDAL->getCoockieExpire($username);
+
+		$passwordDB = $this->userDAL->findUser($username);
+
+		if (time() < $cookieExpire) {
+
+			if($password == $passwordDB) {
+				$this->signIn($username);
+			} else {
+				throw new \Exception("Felaktigt Användarnamn/lösenord.");
+			}
+		} else {
+			throw new \Exception("Coockie has expired.");
+		}
+
+	}
+
+
+
+	public function getCookieExpTime(\model\UserName $username) {
+		return $this->userDAL->getCoockieExpire($username);
 	}
 
 	/**
@@ -59,15 +88,6 @@ class LoginModel {
 		}
 	}
 
-	/*
-	public function doSignInWithCookies($username, $password, $cookieExpTime) {
-
-		if ($username == "Admin" && $password == sha1("Password") && time() <= $cookieExpTime ) {
-			$this->signIn($username);
-		} else {
-			throw new \Exception("Felaktigt information i cookie.");
-		}
-	}
 
 	public function doSignOut() {
 
@@ -76,5 +96,4 @@ class LoginModel {
 			return true;
 		}
 	}
-	*/
 }
