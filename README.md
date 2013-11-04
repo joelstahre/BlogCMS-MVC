@@ -37,6 +37,12 @@ v1.0 Relese
 
 [Klass Diagram(kommer snart)](http://joelstahre.com/files/classdiagram.png)
 
+###Kända buggar
+-----
+Vid utloggning ändras inte url
+Efter skapande av blog inlägg tas man till edit vyn, där behövs url också ändras
+Inte hunnit fixa!
+
 ###Developer
 -----
 [Joel stahre](https://www.joelstahre.com)
