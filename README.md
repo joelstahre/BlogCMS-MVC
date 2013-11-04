@@ -40,7 +40,9 @@ v1.0 Relese
 ###Kända buggar
 -----
 Vid utloggning ändras inte url
+
 Efter skapande av blog inlägg tas man till edit vyn, där behövs url också ändras
+
 Inte hunnit fixa!
 
 ###Developer
