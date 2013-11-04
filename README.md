@@ -47,7 +47,7 @@ Inte hunnit fixa!
 
 ###Developer
 -----
-[Joel stahre](https://www.joelstahre.com)
+[Joel stahre](http://www.joelstahre.com)
 
 ###License
 -----
